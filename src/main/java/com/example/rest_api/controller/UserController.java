@@ -17,25 +17,25 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserEntity>> getAllUsers() {
-        return null;
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserEntity> getUserById(@PathVariable Integer id) {
-        return null;
+        return userService.getUserById(id);
     }
 
     @PostMapping
     public ResponseEntity createUser(@RequestBody UserEntity userEntity) {
-        return null;
+        return userService.createUser(userEntity);
     }
     @PutMapping("/{id}")
     public ResponseEntity<UserEntity> updateUser(@PathVariable Integer id, @RequestBody UserEntity userEntityDetails){
-        return null;
+        return userService.updateUser(id,userEntityDetails);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUsers(@PathVariable Integer id){
-        return null;
+        return userService.deleteUser(id);
     }
 
 
