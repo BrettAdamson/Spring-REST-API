@@ -23,7 +23,9 @@ public class UserService {
 
     public ResponseEntity createUser(UserEntity newUser){
 
-        validateUserInputs(newUser);
+        validateEmailandPhoneNumber(newUser);
+        existingUserCheck(newUser);
+
         UserEntity createdUser = userRepository.save(newUser);
         return ResponseEntity.ok(createdUser);
     }
@@ -46,8 +48,8 @@ public class UserService {
 
 
         UserEntity toBeUpdated = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User does not exist with id : "+ id));
-        validateUserInputs(userEntityDetails);
-
+        validateEmailandPhoneNumber(userEntityDetails);
+        existingUserCheck(userEntityDetails);
         toBeUpdated.setFirstName(userEntityDetails.getFirstName());
         toBeUpdated.setLastName(userEntityDetails.getLastName());
         toBeUpdated.setUsername(userEntityDetails.getUsername());
@@ -67,7 +69,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    private void validateUserInputs(UserEntity userEntity){
+    private void validateEmailandPhoneNumber(UserEntity userEntity){
         //Regex's from https://regex101.com
         Pattern phonePattern = Pattern.compile("^(\\(\\+[0-9]{2}\\))?([0-9]{3}-?)?([0-9]{3})\\-?([0-9]{4})(\\/[0-9]{4})?$");
         Matcher phoneMatcher = phonePattern.matcher(userEntity.getPhoneNumber());
@@ -78,6 +80,14 @@ public class UserService {
         }else if(!emailMatcher.matches()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Email Address");
         }
+    }
+    private void existingUserCheck(UserEntity userEntity){
+        if(userRepository.existsByEmail(userEntity.getEmail())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email Already Exists");
+        }else if(userRepository.existsByUsername(userEntity.getUsername())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username Already Exists");
+        }
+
     }
 
 }
